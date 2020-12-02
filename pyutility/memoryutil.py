@@ -67,7 +67,7 @@ def memoryit(func):
         peak memory used during the execution of given function in bytes (`int`)
     """
     def wrapper(*args, **kwargs):
-        ctx = mp.get_context('spawn')
+        ctx = mp.get_context('forkserver')
         manager = ctx.Manager()
         l = manager.list()
         p = ctx.Process(target=me_worker, args=(
@@ -92,8 +92,7 @@ def limit_memory(value=15):
     """
     def decorator(func):
         def wrapper(*args, **kwargs):
-
-            ctx = mp.get_context('spawn')
+            ctx = mp.get_context('forkserver')
             manager = ctx.Manager()
             l = manager.list()
             p = ctx.Process(target=li_worker, args=(
@@ -108,3 +107,26 @@ def limit_memory(value=15):
 
         return wrapper
     return decorator
+
+
+def fib(x):
+    # li.append(-1)
+    # print(li)
+    if x < 3:
+        return 1
+    return fib(x-1) + fib(x-2)
+
+
+# if __name__ == "__main__":
+# li = [i for i in range(100000)]
+# print(memoryit(fib)(25))
+# print(li[-1])
+
+def main():
+    print(memoryit(fib)(25))
+    # print(li[-1])
+
+
+if __name__ == "__main__":
+
+    main()
