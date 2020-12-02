@@ -16,20 +16,17 @@ def func2():
 
 def func3(*args, **kwagrs):
     # args and kwargs function
-    return args + kwagrs.values()
+    return list(args) + list(kwagrs.values())
 
 
-class TimeUtilTest(TestCase):
+class TimeitTest(TestCase):
+    def setUp(self):
+        self.er_func = timeit(func2)
+        self.func = timeit(func1)
+        self.ka_func = timeit(func3)
+
     def test_timeit1(self):
-        func = timeit(func1)
-        self.assertIsInstance(func(5), float)
+        self.assertIsInstance(self.func(5), float)
 
-        # func = timeit(func1)
-        # self.assertIsInstance(func(35), float)
-
-        # func = timeit(func2)
-        # # self.assertIsInstance(func(5), int)
-        # self.assertRaises(Exception, func)
-
-        # # func = timeit(func1)
-        # # self.assertIsInstance(func(5), int)
+    def test_timeit2(self):
+        self.assertRaises(Exception, self.er_func)
