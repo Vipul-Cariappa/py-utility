@@ -12,8 +12,9 @@ setup(
     license="MIT",
     classifiers=[
         "Development Status :: 3 - Alpha",
-        "License :: MIT License",
-        "Programming Launguage :: Python :: 3.9",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: Unix",
+        "Programming Language :: Python :: 3.9",
     ],
     keywords="py-utility",
     packages=find_packages(exclude=["tests/"]),
