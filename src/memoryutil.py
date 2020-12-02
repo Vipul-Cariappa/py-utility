@@ -29,6 +29,34 @@ def me_worker(func, storage, *args, **kwargs):
     return new_peak - now_mem
 
 
+def li_worker(func, limit, storage, *args, **kwargs):
+    """limits the memory consumption of given function; should be run by limit_memory decorator as a new process
+
+    Args:
+        func (`function`): function to execute
+        limit (`int`): maximum allowed memory consuption
+        storage (`list`): multiprocessing.Manager().List() to store the peak memory
+        args (`tuple`): arguments for the function
+        kwargs(`dict`): keyword arguments for the function
+
+    Return:
+        return value of function or MemoryError
+    """
+    soft, hard = resource.getrlimit(resource.RLIMIT_AS)
+    resource.setrlimit(resource.RLIMIT_AS,
+                       (int(limit * 1024 * 1024), hard))
+
+    try:
+        value = func(*args, **kwargs)
+        storage.append(value)
+    except Exception as error:
+        storage.append(error)
+    finally:
+        resource.setrlimit(resource.RLIMIT_AS, (soft, hard))
+
+    return 0
+
+
 def memoryit(func):
     """decorator function to measures the peak memory consumption of given function
 
@@ -39,7 +67,7 @@ def memoryit(func):
         peak memory used during the execution of given function in bytes (`int`)
     """
     def wrapper(*args, **kwargs):
-        ctx = mp.get_context('fork')
+        ctx = mp.get_context('spawn')
         manager = ctx.Manager()
         l = manager.list()
         p = ctx.Process(target=me_worker, args=(
@@ -50,3 +78,33 @@ def memoryit(func):
         return l[-1]
 
     return wrapper
+
+
+def limit_memory(value=15):
+    """decorator function to limits the memory consumption of given function
+
+    Args:
+        value (`int`): maximum allowed memory consuption in MB
+        func (`function`): function to execute
+
+    Return:
+        return value of function or MemoryError
+    """
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+
+            ctx = mp.get_context('spawn')
+            manager = ctx.Manager()
+            l = manager.list()
+            p = ctx.Process(target=li_worker, args=(
+                func, value, l, *args), kwargs=kwargs)
+            p.start()
+            p.join()
+
+            if isinstance(l[-1], Exception):
+                raise l[-1]
+            else:
+                return l[-1]
+
+        return wrapper
+    return decorator
