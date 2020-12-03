@@ -30,3 +30,23 @@ class TimeitTest(TestCase):
 
     def test_timeit2(self):
         self.assertRaises(Exception, self.er_func)
+
+
+class LimitTimeTest(TestCase):
+    def setUp(self):
+        self.er_func = limit_time(2)(func2)
+        self.func = limit_time(2)(func1)
+        self.ka_func = limit_time(2)(func3)
+
+    def test_limit_time_1(self):
+        self.assertEqual(self.func(10), 55)
+
+    def test_limit_time_2(self):
+        self.assertRaises(Exception, self.er_func)
+
+    def test_limit_time_3(self):
+        self.assertRaises(Exception, self.func, args=(50,))
+
+    def test_limit_time_4(self):
+        self.assertEqual(self.ka_func(
+            1, 2, 3, four=4, five=5), [1, 2, 3, 4, 5])
