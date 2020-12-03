@@ -3,7 +3,6 @@ from pyutility import limit_memory, memoryit
 
 
 def func1(x):
-    # recursive function to find xth fibonacci number
     x = [i for i in range(x)]
     return -1
 
@@ -44,7 +43,7 @@ class LimitMemoryTest(TestCase):
         self.assertRaises(Exception, self.er_func)
 
     def test_limit_memory_3(self):
-        self.assertRaises(Exception, self.func, args=(100_000_000,))
+        self.assertRaises(MemoryError, self.func, 100_000_000)
 
     def test_limit_memory_4(self):
         self.assertEqual(self.ka_func(

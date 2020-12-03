@@ -45,7 +45,7 @@ class LimitTimeTest(TestCase):
         self.assertRaises(Exception, self.er_func)
 
     def test_limit_time_3(self):
-        self.assertRaises(Exception, self.func, args=(50,))
+        self.assertRaises(TimeoutError, self.func, 50)
 
     def test_limit_time_4(self):
         self.assertEqual(self.ka_func(
