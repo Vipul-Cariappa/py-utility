@@ -3,7 +3,6 @@ from pyutility import limit_memory, memoryit
 
 
 def func1(x):
-    # recursive function to find xth fibonacci number
     x = [i for i in range(x)]
     return -1
 
