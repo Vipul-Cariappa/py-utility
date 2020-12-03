@@ -22,7 +22,7 @@ def me_worker(func, storage, *args, **kwargs):
     t1 = time()  # time start
     now_mem, peak_mem = tm.get_traced_memory()  # memory start
 
-    func(*args, **kwargs)  # calling function
+    value = func(*args, **kwargs)  # calling function
 
     new_mem, new_peak = tm.get_traced_memory()  # memory stop
     t2 = time()  # time stop
