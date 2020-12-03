@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="py-utility",
-    version="0.1.0",
+    version="0.1.1",
     description="Utility functions for managing and monitoring python resources",
     long_description="Utility functions for managing and monitoring python resources",
     url="https://github.com/Vipul-Cariappa/py-utility",
@@ -11,7 +11,7 @@ setup(
     author_email="vipulcariappa@gmail.com",
     license="MIT",
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "License :: OSI Approved :: MIT License",
         "Operating System :: Unix",
         "Programming Language :: Python :: 3.9",
