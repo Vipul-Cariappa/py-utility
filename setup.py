@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="py-utility",
-    version="0.0.1",
+    version="0.1.0",
     description="Utility functions for managing and monitoring python resources",
     long_description="Utility functions for managing and monitoring python resources",
     url="https://github.com/Vipul-Cariappa/py-utility",
@@ -20,6 +20,6 @@ setup(
     packages=find_packages(exclude=["tests/"]),
     install_requires=[],
     test_suite='tests',
-    tests_require=None,
+    tests_require="pytest",
     python_requires='>=3.6',
 )
