@@ -16,7 +16,7 @@ def me_worker(func, storage, *args, **kwargs):
         time taken to execute the given function in seconds (`int`)
     """
     t1 = time()
-    return_value = func(*args, **kwargs)
+    func(*args, **kwargs)
     t2 = time()
     storage.append(t2-t1)
     return t2 - t1
@@ -64,13 +64,13 @@ def timeit(func):
     def wrapper(*args, **kwargs):
         ctx = mp.get_context('spawn')
         manager = ctx.Manager()
-        l = manager.list()
+        com_obj = manager.list()
         p = ctx.Process(target=me_worker, args=(
-            func, l, *args), kwargs=kwargs)
+            func, com_obj, *args), kwargs=kwargs)
         p.start()
         p.join()
 
-        return l[-1]
+        return com_obj[-1]
     return wrapper
 
 
@@ -89,16 +89,16 @@ def limit_time(time=10):
 
             ctx = mp.get_context('spawn')
             manager = ctx.Manager()
-            l = manager.list()
+            com_obj = manager.list()
             p = ctx.Process(target=li_worker, args=(
-                func, time, l, *args), kwargs=kwargs)
+                func, time, com_obj, *args), kwargs=kwargs)
             p.start()
             p.join()
 
-            if isinstance(l[-1], Exception):
-                raise l[-1]
+            if isinstance(com_obj[-1], Exception):
+                raise com_obj[-1]
             else:
-                return l[-1]
+                return com_obj[-1]
 
         return wrapper
     return inner

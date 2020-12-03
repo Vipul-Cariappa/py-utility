@@ -19,7 +19,7 @@ def me_worker(func, storage, *args, **kwargs):
     tm.start()
     now_mem, peak_mem = tm.get_traced_memory()
 
-    return_value = func(*args, **kwargs)
+    value = func(*args, **kwargs)
 
     new_mem, new_peak = tm.get_traced_memory()
     tm.stop()
@@ -69,13 +69,13 @@ def memoryit(func):
     def wrapper(*args, **kwargs):
         ctx = mp.get_context('spawn')
         manager = ctx.Manager()
-        l = manager.list()
+        com_obj = manager.list()
         p = ctx.Process(target=me_worker, args=(
-            func, l, *args), kwargs=kwargs)
+            func, com_obj, *args), kwargs=kwargs)
         p.start()
         p.join()
 
-        return l[-1]
+        return com_obj[-1]
 
     return wrapper
 
@@ -94,16 +94,16 @@ def limit_memory(value=15):
         def wrapper(*args, **kwargs):
             ctx = mp.get_context('spawn')
             manager = ctx.Manager()
-            l = manager.list()
+            com_obj = manager.list()
             p = ctx.Process(target=li_worker, args=(
-                func, value, l, *args), kwargs=kwargs)
+                func, value, com_obj, *args), kwargs=kwargs)
             p.start()
             p.join()
 
-            if isinstance(l[-1], Exception):
-                raise l[-1]
+            if isinstance(com_obj[-1], Exception):
+                raise com_obj[-1]
             else:
-                return l[-1]
+                return com_obj[-1]
 
         return wrapper
     return decorator
