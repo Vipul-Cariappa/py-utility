@@ -57,53 +57,50 @@ def li_worker(func, limit, storage, *args, **kwargs):
     return 0
 
 
-def memoryit(func):
-    """decorator function to measures the peak memory consumption of given function
+def memoryit(func, args=(), kwargs={}):
+    """measures the peak memory consumption of given function; should be run by memoryit decorator as a new process
 
     Args:
         func (`function`): function to execute
+        args (`tuple`): arguments for the function
+        kwargs(`dict`): keyword arguments for the function
 
     Return:
         peak memory used during the execution of given function in bytes (`int`)
     """
-    def wrapper(*args, **kwargs):
-        ctx = mp.get_context('spawn')
-        manager = ctx.Manager()
-        com_obj = manager.list()
-        p = ctx.Process(target=me_worker, args=(
-            func, com_obj, *args), kwargs=kwargs)
-        p.start()
-        p.join()
+    ctx = mp.get_context('spawn')
+    manager = ctx.Manager()
+    com_obj = manager.list()
+    p = ctx.Process(target=me_worker, args=(
+        func, com_obj, *args), kwargs=kwargs)
+    p.start()
+    p.join()
 
-        return com_obj[-1]
-
-    return wrapper
+    return com_obj[-1]
 
 
-def limit_memory(value=15):
-    """decorator function to limits the memory consumption of given function
+def limit_memory(func, memory=25, args=(), kwargs={}):
+    """limits the memory consumption of given function; should be run by limit_memory decorator as a new process
 
     Args:
-        value (`int`): maximum allowed memory consumption in MB
         func (`function`): function to execute
+        limit (`int`): maximum allowed memory consuption
+\        args (`tuple`): arguments for the function
+        kwargs(`dict`): keyword arguments for the function
 
     Return:
         return value of function or MemoryError
     """
-    def decorator(func):
-        def wrapper(*args, **kwargs):
-            ctx = mp.get_context('spawn')
-            manager = ctx.Manager()
-            com_obj = manager.list()
-            p = ctx.Process(target=li_worker, args=(
-                func, value, com_obj, *args), kwargs=kwargs)
-            p.start()
-            p.join()
 
-            if isinstance(com_obj[-1], Exception):
-                raise com_obj[-1]
-            else:
-                return com_obj[-1]
+    ctx = mp.get_context('spawn')
+    manager = ctx.Manager()
+    com_obj = manager.list()
+    p = ctx.Process(target=li_worker, args=(
+        func, memory, com_obj, *args), kwargs=kwargs)
+    p.start()
+    p.join()
 
-        return wrapper
-    return decorator
+    if isinstance(com_obj[-1], Exception):
+        raise com_obj[-1]
+    else:
+        return com_obj[-1]

@@ -1,50 +1,34 @@
 from unittest import TestCase
 from pyutility import limit_memory, memoryit
 
-
-def func1(x):
-    x = [i for i in range(x)]
-    return -1
-
-
-def func2():
-    # error function
-    return "a" / 2
-
-
-def func3(*args, **kwagrs):
-    # args and kwargs function
-    return list(args) + list(kwagrs.values())
+from .func import memory, error, return_check
 
 
 class MemoryitTest(TestCase):
-    def setUp(self):
-        self.er_func = memoryit(func2)
-        self.func = memoryit(func1)
-        self.ka_func = memoryit(func3)
 
-    def test_memoryit_1(self):
-        self.assertIsInstance(self.func(5), int)
+    def test_memoryit1(self):
+        v = memoryit(memory, args=(5,))
+        self.assertIsInstance(v, int)
 
-    def test_memoryit_2(self):
-        self.assertRaises(Exception, self.er_func)
+    def test_memoryit2(self):
+        self.assertRaises(Exception, memoryit, error, 5)
 
 
 class LimitMemoryTest(TestCase):
-    def setUp(self):
-        self.er_func = limit_memory()(func2)
-        self.func = limit_memory()(func1)
-        self.ka_func = limit_memory()(func3)
 
     def test_limit_memory_1(self):
-        self.assertEqual(self.func(3), -1)
+        v = limit_memory(memory, args=(10,))
+        self.assertEqual(v, -1)
 
     def test_limit_memory_2(self):
-        self.assertRaises(Exception, self.er_func)
+        self.assertRaises(Exception, limit_memory, error,
+                          args=(100_000_000,))
 
     def test_limit_memory_3(self):
-        self.assertRaises(MemoryError, self.func, 100_000_000)
+        self.assertRaises(MemoryError, limit_memory,
+                          memory,  args=(500_000_000,))
 
     def test_limit_memory_4(self):
-        self.assertEqual(self.ka_func(
-            1, 2, 3, four=4, five=5), [1, 2, 3, 4, 5])
+        v = limit_memory(return_check,  args=(1, 2, 3),
+                         kwargs={"four": 4, "five": 5})
+        self.assertEqual(v, [1, 2, 3, 4, 5])
