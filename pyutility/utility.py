@@ -15,7 +15,7 @@ def me_worker(func, storage, *args, **kwargs):
         kwargs(`dict`): keyword arguments for the function
 
     Return:
-        peak memory used, time taken during the execution of given function in bytes (`list` of 'int', 'float')
+        peak memory used, time taken for the execution of given function (`list` of 'int', 'float')
     """
 
     tm.start()
@@ -83,7 +83,7 @@ def measureit(func, args=(), kwargs={}):
         kwargs(`dict`): keyword arguments for the function
 
     Return:
-        peak memory used, time taken during the execution of given function in bytes (`list` of 'int', 'float')
+        peak memory used (MB), time taken (seconds) during the execution of given function (`list` of 'int', 'float')
     """
     ctx = mp.get_context('spawn')
     manager = ctx.Manager()
@@ -105,8 +105,8 @@ def limit_resource(func, time=10, memory=25, args=(), kwargs={}):
 
     Args:
         func (`function`): function to execute
-        time (`int`): maximum allowed time in seconds
-        memory (`int`): maximum allowed memory consumption in MB
+        time (`int`): maximum allowed time in seconds, default is 10
+        memory (`int`): maximum allowed memory consumption in MB, default is 25
         args (`tuple`): arguments for the function
         kwargs(`dict`): keyword arguments for the function
 

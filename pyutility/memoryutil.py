@@ -4,7 +4,7 @@ import resource
 
 
 def me_worker(func, storage, *args, **kwargs):
-    """measures the peak memory consumption of given function; should be run by memoryit decorator as a new process
+    """measures the peak memory consumption of given function
 
     Args:
         func (`function`): function to execute
@@ -30,11 +30,11 @@ def me_worker(func, storage, *args, **kwargs):
 
 
 def li_worker(func, limit, storage, *args, **kwargs):
-    """limits the memory consumption of given function; should be run by limit_memory decorator as a new process
+    """limits the memory consumption of given function
 
     Args:
         func (`function`): function to execute
-        limit (`int`): maximum allowed memory consuption
+        limit (`int`): maximum allowed memory consumption
         storage (`list`): multiprocessing.Manager().List() to store the peak memory
         args (`tuple`): arguments for the function
         kwargs(`dict`): keyword arguments for the function
@@ -58,7 +58,7 @@ def li_worker(func, limit, storage, *args, **kwargs):
 
 
 def memoryit(func, args=(), kwargs={}):
-    """measures the peak memory consumption of given function; should be run by memoryit decorator as a new process
+    """measures the peak memory consumption of given function
 
     Args:
         func (`function`): function to execute
@@ -80,12 +80,13 @@ def memoryit(func, args=(), kwargs={}):
 
 
 def limit_memory(func, memory=25, args=(), kwargs={}):
-    """limits the memory consumption of given function; should be run by limit_memory decorator as a new process
+    """limits the memory consumption of given function. 
+    If limit set is very low it will not behave in expected way.
 
     Args:
         func (`function`): function to execute
-        limit (`int`): maximum allowed memory consuption
-\        args (`tuple`): arguments for the function
+        limit (`int`): maximum allowed memory consumption in MB default is 25 MB
+        args (`tuple`): arguments for the function
         kwargs(`dict`): keyword arguments for the function
 
     Return:

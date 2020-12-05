@@ -37,14 +37,29 @@ class LimitResourceTest(TestCase):
         self.assertRaises(Exception, error)
 
     def test_limit_resource_4(self):
-        self.assertRaises(MemoryError, limit_resource,
-                          memory, args=(100_000_000,), time=2)
+        self.assertRaises(
+            MemoryError,
+            limit_resource,
+            memory,
+            args=(100_000_000,),
+            time=2
+        )
 
     def test_limit_resource_5(self):
-        self.assertRaises(TimeoutError, limit_resource,
-                          time, args=(50,), time=2)
+        self.assertRaises(
+            TimeoutError,
+            limit_resource,
+            time,
+            args=(50,),
+            time=2
+        )
 
     def test_limit_resource_6(self):
-        v = limit_resource(return_check, time=2, args=(1, 2, 3),
-                           kwargs={"four": 4, "five": 5})
+        v = limit_resource(
+            return_check,
+            time=2,
+            args=(1, 2, 3),
+            kwargs={"four": 4, "five": 5}
+        )
+
         self.assertEqual(v, [1, 2, 3, 4, 5])

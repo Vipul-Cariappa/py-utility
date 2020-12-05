@@ -21,12 +21,29 @@ class LimitTimeTest(TestCase):
         self.assertEqual(v, 55)
 
     def test_limit_time_2(self):
-        self.assertRaises(Exception, limit_time, error, time=2, args=(2,))
+        self.assertRaises(
+            Exception,
+            limit_time,
+            error,
+            time=2,
+            args=(2,)
+        )
 
     def test_limit_time_3(self):
-        self.assertRaises(TimeoutError, limit_time, time, time=2, args=(50,))
+        self.assertRaises(
+            TimeoutError,
+            limit_time,
+            time,
+            time=2,
+            args=(50,)
+        )
 
     def test_limit_time_4(self):
-        v = limit_time(return_check, time=2, args=(1, 2, 3),
-                       kwargs={"four": 4, "five": 5})
+        v = limit_time(
+            return_check,
+            time=2,
+            args=(1, 2, 3),
+            kwargs={"four": 4, "five": 5}
+        )
+
         self.assertEqual(v, [1, 2, 3, 4, 5])

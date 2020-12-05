@@ -4,8 +4,7 @@ import signal
 
 
 def me_worker(func, storage, *args, **kwargs):
-    """measures the time taken to execute given function should be run by timeit decorator as a new process
-
+    """measures the time taken to execute given function
     Args:
         func (`function`): function to execute
         storage (`list`): multiprocessing.Manager().List() to store the time taken to excute
@@ -13,7 +12,7 @@ def me_worker(func, storage, *args, **kwargs):
         kwargs(`dict`): keyword arguments for the function
 
     Return:
-        time taken to execute the given function in seconds (`int`)
+        time taken to execute the given function in seconds (`float`)
     """
     t1 = time()
     func(*args, **kwargs)
@@ -23,7 +22,7 @@ def me_worker(func, storage, *args, **kwargs):
 
 
 def li_worker(func, time, storage, *args, **kwargs):
-    """limits the time taken for exection of given function; should be run by limit_time decorator as a new process
+    """limits the time taken for exection of given function
 
     Args:
         func (`function`): function to execute
@@ -53,7 +52,7 @@ def li_worker(func, time, storage, *args, **kwargs):
 
 
 def timeit(func, args=(), kwargs={}):
-    """measures the time taken to execute given function should be run by timeit decorator as a new process
+    """measures the time taken to execute given function
 
     Args:
         func (`function`): function to execute
@@ -61,7 +60,7 @@ def timeit(func, args=(), kwargs={}):
         kwargs(`dict`): keyword arguments for the function
 
     Return:
-        time taken to execute the given function in seconds (`int`)
+        time taken to execute the given function in seconds (`float`)
     """
 
     ctx = mp.get_context('spawn')
@@ -80,7 +79,7 @@ def limit_time(func, time=10, args=(), kwargs={}):
 
     Args:
         func (`function`): function to execute
-        limit (`int`): maximum allowed time in seconds
+        limit (`int`): maximum allowed time in seconds, default is 10
         args (`tuple`): arguments for the function
         kwargs(`dict`): keyword arguments for the function
 

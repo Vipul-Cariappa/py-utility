@@ -21,14 +21,26 @@ class LimitMemoryTest(TestCase):
         self.assertEqual(v, -1)
 
     def test_limit_memory_2(self):
-        self.assertRaises(Exception, limit_memory, error,
-                          args=(100_000_000,))
+        self.assertRaises(
+            Exception,
+            limit_memory,
+            error,
+            args=(100_000_000,)
+        )
 
     def test_limit_memory_3(self):
-        self.assertRaises(MemoryError, limit_memory,
-                          memory,  args=(500_000_000,))
+        self.assertRaises(
+            MemoryError,
+            limit_memory,
+            memory,
+            args=(500_000_000,)
+        )
 
     def test_limit_memory_4(self):
-        v = limit_memory(return_check,  args=(1, 2, 3),
-                         kwargs={"four": 4, "five": 5})
+        v = limit_memory(
+            return_check,
+            args=(1, 2, 3),
+            kwargs={"four": 4, "five": 5}
+        )
+
         self.assertEqual(v, [1, 2, 3, 4, 5])
