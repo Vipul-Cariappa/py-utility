@@ -4,6 +4,9 @@ Utility functions for managing and monitoring python resources.
 ## installation
 <pre><code>pip install py-utility</code></pre>
 
+
+## Documentation
+
 ### memoryit
 memoryit returns the total memory used by the function at runtime in bytes.
 <br>
