@@ -15,7 +15,7 @@ def me_worker(func, storage, *args, **kwargs):
         kwargs(`dict`): keyword arguments for the function
 
     Return:
-        peak memory used, time taken during the execution of given function in bytes (`list` of 'int', 'float')
+        peak memory used, time taken for the execution of given function (`list` of 'int', 'float')
     """
 
     tm.start()
@@ -74,58 +74,54 @@ def li_worker(func, storage, time, memory, *args, **kwargs):
     return 0
 
 
-def measureit(func):
-    """decorator function to measures the peak memory consumption and time taken to execute given function
+def measureit(func, args=(), kwargs={}):
+    """measures the peak memory consumption and time taken for execution of given function
 
     Args:
         func (`function`): function to execute
+        args (`tuple`): arguments for the function
+        kwargs(`dict`): keyword arguments for the function
 
     Return:
-        peak memory used, time taken during the execution of given function in bytes (`tuple` of 'int', 'float')
+        peak memory used (MB), time taken (seconds) during the execution of given function (`list` of 'int', 'float')
     """
-    def wrapper(*args, **kwargs):
-        ctx = mp.get_context('spawn')
-        manager = ctx.Manager()
-        com_obj = manager.list()
-        p = ctx.Process(target=me_worker, args=(
-            func, com_obj, *args), kwargs=kwargs)
-        p.start()
-        p.join()
+    ctx = mp.get_context('spawn')
+    manager = ctx.Manager()
+    com_obj = manager.list()
+    p = ctx.Process(target=me_worker, args=(
+        func, com_obj, *args), kwargs=kwargs)
+    p.start()
+    p.join()
 
-        if len(com_obj) == 2:
-            return tuple(com_obj)
+    if len(com_obj) == 2:
+        return tuple(com_obj)
 
-        # else
-        raise com_obj[-1]
-
-    return wrapper
+    # else
+    raise com_obj[-1]
 
 
-def limit_resource(time=10, memory=25):
-    """decorator function to limits the memory consumption and time taken to execute given function
+def limit_resource(func, time=10, memory=25, args=(), kwargs={}):
+    """limits the memory consumption and time taken to execute given function
 
     Args:
-        time (`int`): maximum allowed time consuption in seconds
-        memory (`int`): maximum allowed memory consuption in MB
         func (`function`): function to execute
+        time (`int`): maximum allowed time in seconds, default is 10
+        memory (`int`): maximum allowed memory consumption in MB, default is 25
+        args (`tuple`): arguments for the function
+        kwargs(`dict`): keyword arguments for the function
 
     Return:
         return value of function or MemoryError or TimeoutError
     """
-    def decorator(func):
-        def wrapper(*args, **kwargs):
-            ctx = mp.get_context('spawn')
-            manager = ctx.Manager()
-            com_obj = manager.list()
-            p = ctx.Process(target=li_worker, args=(
-                func, com_obj, time, memory, *args), kwargs=kwargs)
-            p.start()
-            p.join()
+    ctx = mp.get_context('spawn')
+    manager = ctx.Manager()
+    com_obj = manager.list()
+    p = ctx.Process(target=li_worker, args=(
+        func, com_obj, time, memory, *args), kwargs=kwargs)
+    p.start()
+    p.join()
 
-            if isinstance(com_obj[-1], Exception):
-                raise com_obj[-1]
-            else:
-                return com_obj[-1]
-
-        return wrapper
-    return decorator
+    if isinstance(com_obj[-1], Exception):
+        raise com_obj[-1]
+    # else
+    return com_obj[-1]

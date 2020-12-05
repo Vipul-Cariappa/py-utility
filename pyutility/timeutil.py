@@ -4,8 +4,7 @@ import signal
 
 
 def me_worker(func, storage, *args, **kwargs):
-    """measures the time taken to execute given function should be run by timeit decorator as a new process
-
+    """measures the time taken to execute given function
     Args:
         func (`function`): function to execute
         storage (`list`): multiprocessing.Manager().List() to store the time taken to excute
@@ -13,7 +12,7 @@ def me_worker(func, storage, *args, **kwargs):
         kwargs(`dict`): keyword arguments for the function
 
     Return:
-        time taken to execute the given function in seconds (`int`)
+        time taken to execute the given function in seconds (`float`)
     """
     t1 = time()
     func(*args, **kwargs)
@@ -23,7 +22,7 @@ def me_worker(func, storage, *args, **kwargs):
 
 
 def li_worker(func, time, storage, *args, **kwargs):
-    """limits the time taken for exection of given function; should be run by limit_time decorator as a new process
+    """limits the time taken for exection of given function
 
     Args:
         func (`function`): function to execute
@@ -52,53 +51,51 @@ def li_worker(func, time, storage, *args, **kwargs):
     return 0
 
 
-def timeit(func):
-    """decorator function to measure time taken to execute a given function in new process
+def timeit(func, args=(), kwargs={}):
+    """measures the time taken to execute given function
 
     Args:
         func (`function`): function to execute
+        args (`tuple`): arguments for the function
+        kwargs(`dict`): keyword arguments for the function
 
     Return:
-        time taken to execute the given function in seconds (`int`)
+        time taken to execute the given function in seconds (`float`)
     """
-    def wrapper(*args, **kwargs):
-        ctx = mp.get_context('spawn')
-        manager = ctx.Manager()
-        com_obj = manager.list()
-        p = ctx.Process(target=me_worker, args=(
-            func, com_obj, *args), kwargs=kwargs)
-        p.start()
-        p.join()
 
-        return com_obj[-1]
-    return wrapper
+    ctx = mp.get_context('spawn')
+    manager = ctx.Manager()
+    com_obj = manager.list()
+    p = ctx.Process(target=me_worker, args=(
+        func, com_obj, *args), kwargs=kwargs)
+    p.start()
+    p.join()
+
+    return com_obj[-1]
 
 
-def limit_time(time=10):
-    """decorator function to limits the time taken to execute given function
+def limit_time(func, time=10, args=(), kwargs={}):
+    """limits the time taken for exection of given function
 
     Args:
-        value (`int`): maximum allowed time in seconds
         func (`function`): function to execute
+        limit (`int`): maximum allowed time in seconds, default is 10
+        args (`tuple`): arguments for the function
+        kwargs(`dict`): keyword arguments for the function
 
     Return:
         return value of function or TimeoutError
     """
-    def inner(func):
-        def wrapper(*args, **kwargs):
 
-            ctx = mp.get_context('spawn')
-            manager = ctx.Manager()
-            com_obj = manager.list()
-            p = ctx.Process(target=li_worker, args=(
-                func, time, com_obj, *args), kwargs=kwargs)
-            p.start()
-            p.join()
+    ctx = mp.get_context('spawn')
+    manager = ctx.Manager()
+    com_obj = manager.list()
+    p = ctx.Process(target=li_worker, args=(
+        func, time, com_obj, *args), kwargs=kwargs)
+    p.start()
+    p.join()
 
-            if isinstance(com_obj[-1], Exception):
-                raise com_obj[-1]
-            else:
-                return com_obj[-1]
-
-        return wrapper
-    return inner
+    if isinstance(com_obj[-1], Exception):
+        raise com_obj[-1]
+    else:
+        return com_obj[-1]
