@@ -1,8 +1,13 @@
+import sys
 from time import time
 import multiprocessing as mp
 import tracemalloc as tm
-import resource
-import signal
+# import signal
+
+if sys.platform == "win32":
+    from ._windows import resource
+else:
+    import resource
 
 
 def me_worker(func, storage, *args, **kwargs):
@@ -50,11 +55,11 @@ def li_worker(func, storage, time, memory, *args, **kwargs):
     """
 
     # setting time limit
-    def signal_handler(signum, frame):
-        raise TimeoutError
+    # def signal_handler(signum, frame):
+    #     raise TimeoutError
 
-    signal.signal(signal.SIGALRM, signal_handler)
-    signal.alarm(time)
+    # signal.signal(signal.SIGALRM, signal_handler)
+    # signal.alarm(time)
 
     # setting memory limit
     soft, hard = resource.getrlimit(resource.RLIMIT_AS)
@@ -69,7 +74,7 @@ def li_worker(func, storage, time, memory, *args, **kwargs):
         storage.append(error)
     finally:
         resource.setrlimit(resource.RLIMIT_AS, (soft, hard))
-        signal.alarm(0)
+        # signal.alarm(0)
 
     return 0
 
@@ -119,7 +124,15 @@ def limit_resource(func, time=10, memory=25, args=(), kwargs={}):
     p = ctx.Process(target=li_worker, args=(
         func, com_obj, time, memory, *args), kwargs=kwargs)
     p.start()
-    p.join()
+    p.join(time)
+    if p.is_alive():
+
+        # Terminate - may not work if process is stuck for good
+        # p.terminate()
+        # OR Kill - will work for sure, no chance for process to finish nicely however
+        p.kill()
+        p.join()
+        raise TimeoutError
 
     if isinstance(com_obj[-1], Exception):
         raise com_obj[-1]

@@ -1,6 +1,11 @@
+import sys
 import tracemalloc as tm
 import multiprocessing as mp
-import resource
+
+if sys.platform == "win32":
+    from ._windows import resource
+else:
+    import resource
 
 
 def me_worker(func, storage, *args, **kwargs):
