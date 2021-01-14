@@ -11,16 +11,23 @@ g_hjob = None
 def create_job(job_name='', breakaway='silent'):
     hjob = win32job.CreateJobObject(None, job_name)
     if breakaway:
-        info = win32job.QueryInformationJobObject(hjob,
-                                                  win32job.JobObjectExtendedLimitInformation)
+        info = win32job.QueryInformationJobObject(
+            hjob,
+            win32job.JobObjectExtendedLimitInformation
+        )
         if breakaway == 'silent':
             info['BasicLimitInformation']['LimitFlags'] |= (
-                win32job.JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK)
+                win32job.JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK
+            )
         else:
             info['BasicLimitInformation']['LimitFlags'] |= (
-                win32job.JOB_OBJECT_LIMIT_BREAKAWAY_OK)
-        win32job.SetInformationJobObject(hjob,
-                                         win32job.JobObjectExtendedLimitInformation, info)
+                win32job.JOB_OBJECT_LIMIT_BREAKAWAY_OK
+            )
+        win32job.SetInformationJobObject(
+            hjob,
+            win32job.JobObjectExtendedLimitInformation,
+            info
+        )
     return hjob
 
 
@@ -41,19 +48,28 @@ def assign_job(hjob):
 
 def limit_memory(memory_limit):
     assign_job(create_job())
-    print(memory_limit)
+
     if g_hjob is None:
         return
-    info = win32job.QueryInformationJobObject(g_hjob,
-                                              win32job.JobObjectExtendedLimitInformation)
+    info = win32job.QueryInformationJobObject(
+        g_hjob,
+        win32job.JobObjectExtendedLimitInformation
+    )
     info['ProcessMemoryLimit'] = memory_limit
     info['BasicLimitInformation']['LimitFlags'] |= (
-        win32job.JOB_OBJECT_LIMIT_PROCESS_MEMORY)
-    win32job.SetInformationJobObject(g_hjob,
-                                     win32job.JobObjectExtendedLimitInformation, info)
+        win32job.JOB_OBJECT_LIMIT_PROCESS_MEMORY
+    )
+    win32job.SetInformationJobObject(
+        g_hjob,
+        win32job.JobObjectExtendedLimitInformation,
+        info
+    )
 
 
 class resource:
+    # To imitate standard resource library.
+    # Which is unix exclusive.
+
     RLIMIT_AS = None
 
     @classmethod

@@ -1,6 +1,5 @@
 from time import time
 import multiprocessing as mp
-# import signal
 
 
 def me_worker(func, storage, *args, **kwargs):
@@ -34,20 +33,12 @@ def li_worker(func, time, storage, *args, **kwargs):
     Return:
         return value of function or TimeoutError
     """
-    # def signal_handler(signum, frame):
-    #     raise TimeoutError
-
-    # signal.signal(signal.SIGALRM, signal_handler)
-    # signal.alarm(time)
 
     try:
         value = func(*args, **kwargs)
         storage.append(value)
     except Exception as error:
         storage.append(error)
-    finally:
-        # signal.alarm(0)
-        pass
 
     return 0
 
@@ -95,12 +86,9 @@ def limit_time(func, time=10, args=(), kwargs={}):
         func, time, com_obj, *args), kwargs=kwargs)
     p.start()
     p.join(time)
+    
     if p.is_alive():
-
-        # Terminate - may not work if process is stuck for good
         p.terminate()
-        # OR Kill - will work for sure, no chance for process to finish nicely however
-        # p.kill()
         p.join()
         raise TimeoutError
 
