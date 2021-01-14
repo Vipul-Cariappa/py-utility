@@ -128,9 +128,9 @@ def limit_resource(func, time=10, memory=25, args=(), kwargs={}):
     if p.is_alive():
 
         # Terminate - may not work if process is stuck for good
-        # p.terminate()
+        p.terminate()
         # OR Kill - will work for sure, no chance for process to finish nicely however
-        p.kill()
+        # p.kill()
         p.join()
         raise TimeoutError
 

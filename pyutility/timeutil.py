@@ -98,9 +98,9 @@ def limit_time(func, time=10, args=(), kwargs={}):
     if p.is_alive():
 
         # Terminate - may not work if process is stuck for good
-        # p.terminate()
+        p.terminate()
         # OR Kill - will work for sure, no chance for process to finish nicely however
-        p.kill()
+        # p.kill()
         p.join()
         raise TimeoutError
 
